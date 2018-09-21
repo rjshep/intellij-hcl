@@ -62,7 +62,9 @@ object ModuleDetectionUtil {
     val name = moduleBlock.getNameElementUnquoted(1) ?: return CachedValueProvider.Result(null to null, moduleBlock)
     val sourceVal = moduleBlock.`object`?.findProperty("source")?.value as? HCLStringLiteral
         ?: return CachedValueProvider.Result(null to "No 'source' property", moduleBlock)
-    val source = sourceVal.value
+    val source = if (sourceVal.value.startsWith("../../../../../../../")) {
+      sourceVal.value.substring(15)
+    } else sourceVal.value
 
     val file = moduleBlock.containingFile.originalFile
     val directory = file.containingDirectory ?: return CachedValueProvider.Result(null to null, moduleBlock)
